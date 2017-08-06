@@ -6,7 +6,7 @@
 
 
   #+BEGIN_SRC emacs-lisp
-    (defvar my/bib-file-location "~/Dropbox/bibliography/references.bib"
+    (defvar my/bib-file-location "h:/project/uncertainty/uncertainty.bib"
       "Where I keep my bib file.")
   #+END_SRC
 * Emacs package management
@@ -128,6 +128,7 @@
        (add-hook 'text-mode-hook #'turn-on-flyspell)
        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
        (add-hook 'ess-mode-hook #'flyspell-prog-mode))
+	   (setq flyspell-issue-welcome-flag nil) ;; fix flyspell problem
    #+END_SRC
 * R (ESS)
   ESS (short for Emacs Speaks Statistics) is the package that lets Emacs know about R and how it works. Let's load it up. No need to make sure that it is installed like we did with =use-package= in the previous section - =use-package= lets us just say "ensure" and will install it if it doesn't exist:  
