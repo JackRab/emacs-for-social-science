@@ -231,8 +231,7 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   #+END_SRC
 
 * Window-numbering
-   
-  Magit is an Emacs package that makes dealing with git awesome.
+  Numbered window shortcuts for Emacs.
 
   #+BEGIN_SRC emacs-lisp
     (use-package window-numbering
