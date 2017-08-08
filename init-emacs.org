@@ -63,7 +63,8 @@
   In my world, =C-z= is undo, not minimize emacs:
 
   #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "C-z") #'undo)
+    ;; comment this part since I use Evil
+    ;; (global-set-key (kbd "C-z") #'undo)
   #+END_SRC
 
   We also want words to wrap around nicely. The default behavior wraps in the middle of a word, which is awful:
@@ -71,6 +72,14 @@
   #+BEGIN_SRC emacs-lisp
     (global-visual-line-mode)
   #+END_SRC
+
+  The default font size(10pt) is too small for me personally, so I want to rescale it a little bit.
+
+  #+BEGIN_SRC emacs-lisp
+    (set-face-attribute 'default nil :height 140)
+  #+END_SRC
+
+
 
 ** Fix for Mac
    Emacs on Mac sometimes can't find installed programs (e.g. R, spellcheck). This fixes that:
@@ -96,7 +105,8 @@
        (use-package company-quickhelp
          :ensure t
          :config
-         (company-quickhelp-mode 1)))
+         (company-quickhelp-mode 1))
+         (setq company-quickhelp-delay nil))  ;;set to nil to avoid automatically pop up help html
    #+END_SRC
 
 ** Smartparens
@@ -124,18 +134,40 @@
    #+BEGIN_SRC emacs-lisp
      (use-package flyspell
        :ensure t
+       :init
+       ;;While it always spells a flyspell enabling error message, 
+       ;;which is a kind of anonying.
+       (setq flyspell-issue-welcome-flag nil)) ;; fix flyspell problem
        :config
        (add-hook 'text-mode-hook #'turn-on-flyspell)
        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-       (add-hook 'ess-mode-hook #'flyspell-prog-mode))
-	   (setq flyspell-issue-welcome-flag nil) ;; fix flyspell problem
+       (add-hook 'ess-mode-hook #'flyspell-prog-mode)
    #+END_SRC
+
 * R (ESS)
   ESS (short for Emacs Speaks Statistics) is the package that lets Emacs know about R and how it works. Let's load it up. No need to make sure that it is installed like we did with =use-package= in the previous section - =use-package= lets us just say "ensure" and will install it if it doesn't exist:  
 
   #+BEGIN_SRC emacs-lisp
     (use-package ess-site
       :ensure ess)
+  #+END_SRC
+
+* Evil
+  Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package evil
+      :ensure t
+      :init
+      (evil-mode 1) ;;enable evil mode by default
+      (setq evil-default-state 'emacs) ;; enter emacs mode after initialize
+      (define-key evil-emacs-state-map (kbd "C-o") 'evil-execute-in-normal-state) ;;temporary enter evil mode
+      :config
+      ;; show which mode is in
+      (setq evil-normal-state-tag "NORMAL")
+      (setq evil-insert-state-tag "INSERT")
+      (setq evil-visual-state-tag "VISUAL")
+      )
   #+END_SRC
 
 * Latex (AuCTeX)
@@ -166,6 +198,17 @@
       :ensure t)
   #+END_SRC
 
+* Flycheck 
+  Modern on-the-fly syntax checking extension for GNU Emacs.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package flycheck
+      :ensure t
+      :init (global-flycheck-mode))
+  #+END_SRC
+
+Then press C-M-x with point somewhere in this form to install and enable Flycheck for the current Emacs session.
+
 * Rmarkdown/knitr (polymode)
   Polymode is a package that lets us use emacs to edit rmarkdown and sweave-type files that combine markdown or latex with R code. Let's load it up and make it aware of the file extensions:
 
@@ -187,6 +230,18 @@
       :bind ("C-x g" . magit-status))
   #+END_SRC
 
+* Window-numbering
+   
+  Magit is an Emacs package that makes dealing with git awesome.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package window-numbering
+      :ensure t
+      :init
+      (progn
+        (window-numbering-mode t)))
+  #+END_SRC
+
 * Ivy
   Ivy is a completion framework that helps you find things (files, emacs commands, etc). We set it up here with a super minimal configuration because the reference 
 
@@ -195,6 +250,63 @@
       :ensure t
       :config
       (ivy-mode 1))
+  #+END_SRC
+
+* Avy
+  avy is a GNU Emacs package for jumping to visible text using a char-based decision tree. 
+  #+BEGIN_SRC emacs-lisp
+    (use-package avy
+    :ensure t
+    :bind ("M-s" . avy-goto-char))
+  #+END_SRC
+
+* Projectile 
+  Projectile is a project interaction library for Emacs. Its goal is to provide a nice set of features operating on a project level without introducing external dependencies(when feasible). For instance - finding project files has a portable implementation written in pure Emacs Lisp without the use of GNU find (but for performance sake an indexing mechanism backed by external commands exists as well).
+  #+BEGIN_SRC emacs-lisp
+    (use-package projectile
+      :ensure t
+      :bind ("C-x p" . projectile-switch-project)
+      :config
+      (projectile-global-mode)
+      (setq projectile-enable-caching t))
+  #+END_SRC
+
+* Expand-region 
+  Expand region increases the selected region by semantic units. Just keep pressing the key until it selects what you want.
+  #+BEGIN_SRC emacs-lisp
+    (use-package expand-region
+      :ensure t
+      :bind ("C-=" . er/expand-region))
+  #+END_SRC
+
+* Smex 
+  Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenient interface to your recently and most frequently used commands. And to all the other commands, too.
+  #+BEGIN_SRC emacs-lisp
+   (use-package smex
+     :ensure t
+     :defer t
+     :bind (("M-x" . smex)
+            ("M-X" . smex-major-mode-commands))
+     :config
+     (progn
+      (smex-initialize))) 
+  #+END_SRC
+
+* YASnippet 
+  YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates. Bundled language templates include: C, C++, C#, Perl, Python, Ruby, SQL, LaTeX, HTML, CSS and more. The snippet syntax is inspired from TextMate's syntax, you can even import most TextMate templates to YASnippet. 
+  #+BEGIN_SRC emacs-lisp
+    (use-package yasnippet
+	  :ensure t
+      :commands (yas-minor-mode) ; autoload `yasnippet' when `yas-minor-mode' is called
+                                            ; using any means: via a hook or by user
+                                            ; Feel free to add more commands to this
+                                            ; list to suit your needs.
+      :init ; stuff to do before requiring the package
+      (progn
+        (add-hook 'prog-mode-hook #'yas-minor-mode))
+      :config ; stuff to do after requiring the package
+      (progn
+        (yas-reload-all)))
   #+END_SRC
 
 * References & bibliographies 

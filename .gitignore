@@ -7,3 +7,8 @@ auto-save-list/*
 /places
 /ido.last
 /abbrev_defs
+eshell/
+projectile-bookmarks.eld
+projectile.cache
+smex-items
+
