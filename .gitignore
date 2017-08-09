@@ -1,4 +1,5 @@
 /init-emacs.el
+server/
 elpa/
 /elpa/archives/elpa/archive-contents
 backups/*

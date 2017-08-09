@@ -137,19 +137,104 @@
        :init
        ;;While it always spells a flyspell enabling error message, 
        ;;which is a kind of anonying.
-       (setq flyspell-issue-welcome-flag nil)) ;; fix flyspell problem
+       (setq flyspell-issue-welcome-flag nil) ;; fix flyspell problem
        :config
+       (when (eq system-type 'windows-nt) ;; comes from here: https://github.com/voltecrus/emacs.d-1/blob/master/init.el
+         (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/"))
+       (setq ispell-program-name "aspell" ; use aspell instead of ispell
+        ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
        (add-hook 'text-mode-hook #'turn-on-flyspell)
        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-       (add-hook 'ess-mode-hook #'flyspell-prog-mode)
+       (add-hook 'ess-mode-hook #'flyspell-prog-mode))
    #+END_SRC
-
+   
 * R (ESS)
   ESS (short for Emacs Speaks Statistics) is the package that lets Emacs know about R and how it works. Let's load it up. No need to make sure that it is installed like we did with =use-package= in the previous section - =use-package= lets us just say "ensure" and will install it if it doesn't exist:  
 
   #+BEGIN_SRC emacs-lisp
     (use-package ess-site
       :ensure ess)
+  #+END_SRC
+
+* Latex (AuCTeX)
+  If you use latex to do any writing, you'll be happy to know that emacs is the highest-rated latex editor [[http://tex.stackexchange.com/questions/339/latex-editors-ides/][on stackexchange]].
+  
+  #+BEGIN_SRC emacs-lisp
+    (use-package tex-site
+      :ensure auctex
+      :mode ("\\.tex\\'" . latex-mode)
+      :config
+      (setq TeX-parse-self t)
+      ;; Here we make auctex aware of latexmk and xelatexmk. We can use
+      ;; these instead of calling pdflatex, bibtex, pdflatex, pdflatex (or
+      ;; similar). I'll set latexmk as the default as there's really no
+      ;; reason to use pdflatex
+      (eval-after-load "tex"
+        '(add-to-list 'TeX-command-list '("latexmk" "latexmk -synctex=1 -shell-escape -pdf %s" TeX-run-TeX nil t :help "Process file with latexmk")))
+      (eval-after-load "tex"
+        '(add-to-list 'TeX-command-list '("xelatexmk" "latexmk -synctex=1 -shell-escape -xelatex %s" TeX-run-TeX nil t :help "Process file with xelatexmk")))
+      (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+       ;; use sumatra to view pdf
+       ;; http://stackoverflow.com/questions/14448606/sync-emacs-auctex-with-sumatra-pdf
+       (setq TeX-PDF-mode t)
+       (setq TeX-source-correlate-mode t)
+       (setq TeX-source-correlate-method 'synctex)
+       (setq TeX-view-program-list
+          '(("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance"
+                             (mode-io-correlate " -forward-search %b %n ") " %o"))))
+       
+       (eval-after-load 'tex
+         '(progn
+            (assq-delete-all 'output-pdf TeX-view-program-selection)
+            (add-to-list 'TeX-view-program-selection '(output-pdf "Sumatra PDF")))))
+  #+END_SRC
+  
+** Sumatra Pdf
+   Sumatra pdf reader is a small but powerful pdf viewer, since I can't use pdf-tools on Windows right now, it's a good alternative, maybe.
+
+* Markdown
+  Markdown is a good way to write up most things, though it doesn't hold a candle to emacs's built-in org-mode:
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package markdown-mode
+      :ensure t)
+  #+END_SRC
+
+* Rmarkdown/knitr (polymode)
+  Polymode is a package that lets us use emacs to edit rmarkdown and sweave-type files that combine markdown or latex with R code. Let's load it up and make it aware of the file extensions:
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package polymode
+      :ensure t
+      :mode
+      ("\\.Snw" . poly-noweb+r-mode)
+      ("\\.Rnw" . poly-noweb+r-mode)
+      ("\\.Rmd" . poly-markdown+r-mode))
+  #+END_SRC
+
+* References & bibliographies 
+  This package configuration lets you type =C-c C-r=  to bring up a list of your references. You can then search through it til you find the one you want. Hitting =RET= inserts a citation. There are a few other things you can do besides inserting citations - have a look by highlighting a bib entry and pressing =M-o=. 
+
+=ivy-bibtex= can also keep track of pdfs of articles and notes that you take pertaining to these articles. Since this is a "minimal" configuration, I don't set that up here. If you're interested, look at =bibtex-completion-library-path= and =bibtex-completion-notes-path=
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package ivy-bibtex
+      :ensure t
+      :config 
+      (setq bibtex-completion-bibliography my/bib-file-location)
+      (bind-key* "C-c C-r" #'ivy-bibtex)
+      ;; default is to open pdf - change that to insert citation
+      (setq ivy-bibtex-default-action #'ivy-bibtex-insert-citation)
+      )
+  #+END_SRC
+
+* Git (magit)
+  Magit is an Emacs package that makes dealing with git awesome.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package magit
+      :ensure t
+      :bind ("C-x g" . magit-status))
   #+END_SRC
 
 * Evil
@@ -170,66 +255,6 @@
       )
   #+END_SRC
 
-* Latex (AuCTeX)
-  If you use latex to do any writing, you'll be happy to know that emacs is the highest-rated latex editor [[http://tex.stackexchange.com/questions/339/latex-editors-ides/][on stackexchange]].
-  
-  #+BEGIN_SRC emacs-lisp
-    (use-package tex-site
-      :ensure auctex
-      :mode ("\\.tex\\'" . latex-mode)
-      :config
-      (setq TeX-parse-self t)
-      ;; Here we make auctex aware of latexmk and xelatexmk. We can use
-      ;; these instead of calling pdflatex, bibtex, pdflatex, pdflatex (or
-      ;; similar). I'll set latexmk as the default as there's really no
-      ;; reason to use pdflatex
-      (eval-after-load "tex"
-        '(add-to-list 'TeX-command-list '("latexmk" "latexmk -synctex=1 -shell-escape -pdf %s" TeX-run-TeX nil t :help "Process file with latexmk")))
-      (eval-after-load "tex"
-        '(add-to-list 'TeX-command-list '("xelatexmk" "latexmk -synctex=1 -shell-escape -xelatex %s" TeX-run-TeX nil t :help "Process file with xelatexmk")))
-      (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk"))))
-  #+END_SRC
-
-* Markdown
-  Markdown is a good way to write up most things, though it doesn't hold a candle to emacs's built-in org-mode:
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package markdown-mode
-      :ensure t)
-  #+END_SRC
-
-* Flycheck 
-  Modern on-the-fly syntax checking extension for GNU Emacs.
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package flycheck
-      :ensure t
-      :init (global-flycheck-mode))
-  #+END_SRC
-
-Then press C-M-x with point somewhere in this form to install and enable Flycheck for the current Emacs session.
-
-* Rmarkdown/knitr (polymode)
-  Polymode is a package that lets us use emacs to edit rmarkdown and sweave-type files that combine markdown or latex with R code. Let's load it up and make it aware of the file extensions:
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package polymode
-      :ensure t
-      :mode
-      ("\\.Snw" . poly-noweb+r-mode)
-      ("\\.Rnw" . poly-noweb+r-mode)
-      ("\\.Rmd" . poly-markdown+r-mode))
-  #+END_SRC
-
-* Git (magit)
-  Magit is an Emacs package that makes dealing with git awesome.
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package magit
-      :ensure t
-      :bind ("C-x g" . magit-status))
-  #+END_SRC
-
 * Window-numbering
   Numbered window shortcuts for Emacs.
 
@@ -239,6 +264,25 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
       :init
       (progn
         (window-numbering-mode t)))
+  #+END_SRC
+
+* Expand-region 
+  Expand region increases the selected region by semantic units. Just keep pressing the key until it selects what you want.
+  #+BEGIN_SRC emacs-lisp
+    (use-package expand-region
+      :ensure t
+      :bind ("C-=" . er/expand-region))
+  #+END_SRC
+
+* Projectile 
+  Projectile is a project interaction library for Emacs. Its goal is to provide a nice set of features operating on a project level without introducing external dependencies(when feasible). For instance - finding project files has a portable implementation written in pure Emacs Lisp without the use of GNU find (but for performance sake an indexing mechanism backed by external commands exists as well).
+  #+BEGIN_SRC emacs-lisp
+    (use-package projectile
+      :ensure t
+      :bind ("C-x p" . projectile-switch-project)
+      :config
+      (projectile-global-mode)
+      (setq projectile-enable-caching t))
   #+END_SRC
 
 * Ivy
@@ -259,24 +303,16 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
     :bind ("M-s" . avy-goto-char))
   #+END_SRC
 
-* Projectile 
-  Projectile is a project interaction library for Emacs. Its goal is to provide a nice set of features operating on a project level without introducing external dependencies(when feasible). For instance - finding project files has a portable implementation written in pure Emacs Lisp without the use of GNU find (but for performance sake an indexing mechanism backed by external commands exists as well).
+* Flycheck 
+  Modern on-the-fly syntax checking extension for GNU Emacs.
+
   #+BEGIN_SRC emacs-lisp
-    (use-package projectile
+    (use-package flycheck
       :ensure t
-      :bind ("C-x p" . projectile-switch-project)
-      :config
-      (projectile-global-mode)
-      (setq projectile-enable-caching t))
+      :init (global-flycheck-mode))
   #+END_SRC
 
-* Expand-region 
-  Expand region increases the selected region by semantic units. Just keep pressing the key until it selects what you want.
-  #+BEGIN_SRC emacs-lisp
-    (use-package expand-region
-      :ensure t
-      :bind ("C-=" . er/expand-region))
-  #+END_SRC
+Then press C-M-x with point somewhere in this form to install and enable Flycheck for the current Emacs session.
 
 * Smex 
   Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenient interface to your recently and most frequently used commands. And to all the other commands, too.
@@ -308,19 +344,42 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
         (yas-reload-all)))
   #+END_SRC
 
-* References & bibliographies 
-  This package configuration lets you type =C-c C-r=  to bring up a list of your references. You can then search through it til you find the one you want. Hitting =RET= inserts a citation. There are a few other things you can do besides inserting citations - have a look by highlighting a bib entry and pressing =M-o=. 
+* Pdf-tools
+  PDF Tools is, among other things, a replacement of DocView for PDF files. The key difference is, that pages are not pre-rendered by e.g. ghostscript and stored in the file-system, but rather created on-demand and stored in memory.
 
-=ivy-bibtex= can also keep track of pdfs of articles and notes that you take pertaining to these articles. Since this is a "minimal" configuration, I don't set that up here. If you're interested, look at =bibtex-completion-library-path= and =bibtex-completion-notes-path=
+This rendering is performed by a special library named, for whatever reason, poppler, running inside a server program. This program is called =epdfinfo= and its job is it to successively read requests from Emacs and produce the proper results, i.e. the PNG image of a PDF page.
 
   #+BEGIN_SRC emacs-lisp
-    (use-package ivy-bibtex
-      :ensure t
-      :config 
-      (setq bibtex-completion-bibliography my/bib-file-location)
-      (bind-key* "C-c C-r" #'ivy-bibtex)
-      ;; default is to open pdf - change that to insert citation
-      (setq ivy-bibtex-default-action #'ivy-bibtex-insert-citation)
-      )
-  #+END_SRC
+    ;; This configuration comes from [[here][https://github.com/abo-abo/hydra/wiki/PDF-Tools]]
+    ;; It is not easy to configure on Windows right now, so disable it first.
+    (use-package pdf-tools
+    :disabled
+    :ensure t
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-page)
+    (bind-keys :map pdf-view-mode-map
+        ("\\" . hydra-pdftools/body)
+        ("<s-spc>" .  pdf-view-scroll-down-or-next-page)
+        ("g"  . pdf-view-first-page)
+        ("G"  . pdf-view-last-page)
+        ("l"  . image-forward-hscroll)
+        ("h"  . image-backward-hscroll)
+        ("j"  . pdf-view-next-page)
+        ("k"  . pdf-view-previous-page)
+        ("e"  . pdf-view-goto-page)
+        ("u"  . pdf-view-revert-buffer)
+        ("al" . pdf-annot-list-annotations)
+        ("ad" . pdf-annot-delete)
+        ("aa" . pdf-annot-attachment-dired)
+        ("am" . pdf-annot-add-markup-annotation)
+        ("at" . pdf-annot-add-text-annotation)
+        ("y"  . pdf-view-kill-ring-save)
+        ("i"  . pdf-misc-display-metadata)
+        ("s"  . pdf-occur)
+        ("b"  . pdf-view-set-slice-from-bounding-box)
+        ("r"  . pdf-view-reset-slice))
+     (use-package org-pdfview
+       :ensure t)) 
+   #+END_SRC
 
