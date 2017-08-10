@@ -148,6 +148,20 @@
        (add-hook 'ess-mode-hook #'flyspell-prog-mode))
    #+END_SRC
    
+** Theme
+   I have tried a lot of themes, but none is satisfying. Try this again.
+
+   #+BEGIN_SRC emacs-lisp
+     ;;(use-package apropospriate-theme
+     ;;  :disabled
+     ;;  :ensure t
+     ;;  :config
+     ;;  (load-theme 'apropospriate-light t))  
+     (use-package spacemacs-theme
+       :defer t
+       :init (load-theme 'spacemacs-dark t))
+   #+END_SRC
+
 * R (ESS)
   ESS (short for Emacs Speaks Statistics) is the package that lets Emacs know about R and how it works. Let's load it up. No need to make sure that it is installed like we did with =use-package= in the previous section - =use-package= lets us just say "ensure" and will install it if it doesn't exist:  
 
@@ -164,6 +178,7 @@
       :ensure auctex
       :mode ("\\.tex\\'" . latex-mode)
       :config
+      (setq TeX-auto-save t)
       (setq TeX-parse-self t)
       ;; Here we make auctex aware of latexmk and xelatexmk. We can use
       ;; these instead of calling pdflatex, bibtex, pdflatex, pdflatex (or
@@ -173,45 +188,83 @@
         '(add-to-list 'TeX-command-list '("latexmk" "latexmk -synctex=1 -shell-escape -pdf %s" TeX-run-TeX nil t :help "Process file with latexmk")))
       (eval-after-load "tex"
         '(add-to-list 'TeX-command-list '("xelatexmk" "latexmk -synctex=1 -shell-escape -xelatex %s" TeX-run-TeX nil t :help "Process file with xelatexmk")))
-      (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
-       ;; use sumatra to view pdf
-       ;; http://stackoverflow.com/questions/14448606/sync-emacs-auctex-with-sumatra-pdf
-       (setq TeX-PDF-mode t)
-       (setq TeX-source-correlate-mode t)
-       (setq TeX-source-correlate-method 'synctex)
-       (setq TeX-view-program-list
-          '(("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance"
-                             (mode-io-correlate " -forward-search %b %n ") " %o"))))
+      (add-hook 'LaTeX-mode-hook
+                (lambda ()
+                  (company-mode)
+                  (smartparens-mode)
+                  (turn-on-reftex)
+                  (setq reftex-plug-into-AUCTeX t)
+                  (reftex-isearch-minor-mode)
+                  (setq TeX-command-default "latexmk")
+                  (setq TeX-PDF-mode t)
+                  (setq TeX-source-correlate-method 'synctex)
+                  (setq TeX-source-correlate-start-server t)))
+      ;; Update PDF buffers after successful LaTeX runs
+      ;;(add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+      ;; see issue [[https://github.com/politza/pdf-tools/issues/128][here]]
+      (require 'subr-x)
+      (defun th/pdf-view-revert-buffer-maybe (file)
+      (when-let ((buf (find-buffer-visiting file)))
+      (with-current-buffer buf
+      (when (derived-mode-p 'pdf-view-mode)
+      (pdf-view-revert-buffer nil t)))))
+      
+      (add-hook 'TeX-after-compilation-finished-functions 
+      #'th/pdf-view-revert-buffer-maybe)
+
+      ;; to use pdfview with auctex
+      (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
+      
+      ;; to use pdfview with auctex
+      (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
+             TeX-source-correlate-start-server t)
+      (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
        
-       (eval-after-load 'tex
-         '(progn
-            (assq-delete-all 'output-pdf TeX-view-program-selection)
-            (add-to-list 'TeX-view-program-selection '(output-pdf "Sumatra PDF")))))
+       ;; use sumatra to view pdf, comment this since we get pdf-tools
+       ;; http://stackoverflow.com/questions/14448606/sync-emacs-auctex-with-sumatra-pdf
+       ;;(setq TeX-PDF-mode t)
+       ;;(setq TeX-source-correlate-mode t)
+       ;;(setq TeX-source-correlate-method 'synctex)
+       ;;(setq TeX-view-program-list
+       ;;   '(("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance"
+       ;;                      (mode-io-correlate " -forward-search %b %n ") " %o"))))
+       ;;
+       ;;(eval-after-load 'tex
+       ;;  '(progn
+       ;;     (assq-delete-all 'output-pdf TeX-view-program-selection)
+       ;;     (add-to-list 'TeX-view-program-selection '(output-pdf "Sumatra PDF")))))
   #+END_SRC
   
 ** Sumatra Pdf
    Sumatra pdf reader is a small but powerful pdf viewer, since I can't use pdf-tools on Windows right now, it's a good alternative, maybe.
 
-* Markdown
-  Markdown is a good way to write up most things, though it doesn't hold a candle to emacs's built-in org-mode:
+* Pdf-tools
+  PDF Tools is, among other things, a replacement of DocView for PDF files. The key difference is, that pages are not pre-rendered by e.g. ghostscript and stored in the file-system, but rather created on-demand and stored in memory.
+
+This rendering is performed by a special library named, for whatever reason, poppler, running inside a server program. This program is called =epdfinfo= and its job is it to successively read requests from Emacs and produce the proper results, i.e. the PNG image of a PDF page.
 
   #+BEGIN_SRC emacs-lisp
-    (use-package markdown-mode
-      :ensure t)
-  #+END_SRC
-
-* Rmarkdown/knitr (polymode)
-  Polymode is a package that lets us use emacs to edit rmarkdown and sweave-type files that combine markdown or latex with R code. Let's load it up and make it aware of the file extensions:
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package polymode
+    ;; This configure file comes from [[http://nasseralkmim.github.io/notes/2016/08/21/my-latex-environment/][here]]
+    (use-package pdf-tools
       :ensure t
-      :mode
-      ("\\.Snw" . poly-noweb+r-mode)
-      ("\\.Rnw" . poly-noweb+r-mode)
-      ("\\.Rmd" . poly-markdown+r-mode))
-  #+END_SRC
+      :mode ("\\.pdf\\'" . pdf-tools-install)
+      :defer t
+      :config
+      (setenv "PATH" (concat "C:\\APPS-SU\\msys64\\mingw64\\bin;" (getenv "PATH"))) 
+      (setq mouse-wheel-follow-mouse t)
+      (setq-default pdf-view-display-size 'fit-page))
+   #+END_SRC
 
+* Reftex
+  Reftex is a package that helps inserting labels, references and citations.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package reftex
+      :ensure t
+      :defer t
+      :config
+      (setq reftex-cite-prompt-optional-args t)); Prompt for empty optional arguments in cite 
+  #+END_SRC
 * References & bibliographies 
   This package configuration lets you type =C-c C-r=  to bring up a list of your references. You can then search through it til you find the one you want. Hitting =RET= inserts a citation. There are a few other things you can do besides inserting citations - have a look by highlighting a bib entry and pressing =M-o=. 
 
@@ -226,6 +279,18 @@
       ;; default is to open pdf - change that to insert citation
       (setq ivy-bibtex-default-action #'ivy-bibtex-insert-citation)
       )
+  #+END_SRC
+
+* Rmarkdown/knitr (polymode)
+  Polymode is a package that lets us use emacs to edit rmarkdown and sweave-type files that combine markdown or latex with R code. Let's load it up and make it aware of the file extensions:
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package polymode
+      :ensure t
+      :mode
+      ("\\.Snw" . poly-noweb+r-mode)
+      ("\\.Rnw" . poly-noweb+r-mode)
+      ("\\.Rmd" . poly-markdown+r-mode))
   #+END_SRC
 
 * Git (magit)
@@ -245,7 +310,7 @@
       :ensure t
       :init
       (evil-mode 1) ;;enable evil mode by default
-      (setq evil-default-state 'emacs) ;; enter emacs mode after initialize
+      ;;(setq evil-default-state 'emacs) ;; enter emacs mode after initialize
       (define-key evil-emacs-state-map (kbd "C-o") 'evil-execute-in-normal-state) ;;temporary enter evil mode
       :config
       ;; show which mode is in
@@ -343,43 +408,4 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
       (progn
         (yas-reload-all)))
   #+END_SRC
-
-* Pdf-tools
-  PDF Tools is, among other things, a replacement of DocView for PDF files. The key difference is, that pages are not pre-rendered by e.g. ghostscript and stored in the file-system, but rather created on-demand and stored in memory.
-
-This rendering is performed by a special library named, for whatever reason, poppler, running inside a server program. This program is called =epdfinfo= and its job is it to successively read requests from Emacs and produce the proper results, i.e. the PNG image of a PDF page.
-
-  #+BEGIN_SRC emacs-lisp
-    ;; This configuration comes from [[here][https://github.com/abo-abo/hydra/wiki/PDF-Tools]]
-    ;; It is not easy to configure on Windows right now, so disable it first.
-    (use-package pdf-tools
-    :disabled
-    :ensure t
-    :config
-    (pdf-tools-install)
-    (setq-default pdf-view-display-size 'fit-page)
-    (bind-keys :map pdf-view-mode-map
-        ("\\" . hydra-pdftools/body)
-        ("<s-spc>" .  pdf-view-scroll-down-or-next-page)
-        ("g"  . pdf-view-first-page)
-        ("G"  . pdf-view-last-page)
-        ("l"  . image-forward-hscroll)
-        ("h"  . image-backward-hscroll)
-        ("j"  . pdf-view-next-page)
-        ("k"  . pdf-view-previous-page)
-        ("e"  . pdf-view-goto-page)
-        ("u"  . pdf-view-revert-buffer)
-        ("al" . pdf-annot-list-annotations)
-        ("ad" . pdf-annot-delete)
-        ("aa" . pdf-annot-attachment-dired)
-        ("am" . pdf-annot-add-markup-annotation)
-        ("at" . pdf-annot-add-text-annotation)
-        ("y"  . pdf-view-kill-ring-save)
-        ("i"  . pdf-misc-display-metadata)
-        ("s"  . pdf-occur)
-        ("b"  . pdf-view-set-slice-from-bounding-box)
-        ("r"  . pdf-view-reset-slice))
-     (use-package org-pdfview
-       :ensure t)) 
-   #+END_SRC
 
