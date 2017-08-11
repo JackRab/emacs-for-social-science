@@ -159,7 +159,7 @@
      ;;  (load-theme 'apropospriate-light t))  
      (use-package spacemacs-theme
        :defer t
-       :init (load-theme 'spacemacs-dark t))
+       :init (load-theme 'spacemacs-light t))
    #+END_SRC
 
 * R (ESS)
@@ -169,6 +169,16 @@
     (use-package ess-site
       :ensure ess)
   #+END_SRC
+
+* Elpy
+   Elpy is an Emacs package to bring powerful Python editing to Emacs. It combines and configures a number of other packages, both written in Emacs Lisp as well as Python.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package elpy
+       :ensure t
+       :config
+       (elpy-enable))
+   #+END_SRC
 
 * Latex (AuCTeX)
   If you use latex to do any writing, you'll be happy to know that emacs is the highest-rated latex editor [[http://tex.stackexchange.com/questions/339/latex-editors-ides/][on stackexchange]].
@@ -339,6 +349,16 @@ This rendering is performed by a special library named, for whatever reason, pop
       :bind ("C-=" . er/expand-region))
   #+END_SRC
 
+* Which-key
+   Emacs package that displays available keybindings in popup.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package which-key
+       :ensure t
+       :diminish ""
+       :config
+       (which-key-mode t))
+   #+END_SRC
 * Projectile 
   Projectile is a project interaction library for Emacs. Its goal is to provide a nice set of features operating on a project level without introducing external dependencies(when feasible). For instance - finding project files has a portable implementation written in pure Emacs Lisp without the use of GNU find (but for performance sake an indexing mechanism backed by external commands exists as well).
   #+BEGIN_SRC emacs-lisp
