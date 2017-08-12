@@ -78,8 +78,14 @@
   #+BEGIN_SRC emacs-lisp
     (set-face-attribute 'default nil :height 140)
   #+END_SRC
-
-
+  
+  #+BEGIN_SRC emacs-lisp
+    ;; deletes all the whitespace when you hit backspace or delete
+   (use-package hungry-delete
+     :ensure t
+     :config
+     (global-hungry-delete-mode))
+  #+END_SRC
 
 ** Fix for Mac
    Emacs on Mac sometimes can't find installed programs (e.g. R, spellcheck). This fixes that:
@@ -148,8 +154,10 @@
        (add-hook 'ess-mode-hook #'flyspell-prog-mode))
    #+END_SRC
    
-** Theme
+** Themes and mode-line
    I have tried a lot of themes, but none is satisfying. Try this again.
+   
+   Smart Mode Line is a sexy mode-line for Emacs. It aims to be easy to read from small to large monitors by using colors, a prefix feature, and smart truncation.
 
    #+BEGIN_SRC emacs-lisp
      ;;(use-package apropospriate-theme
@@ -158,8 +166,40 @@
      ;;  :config
      ;;  (load-theme 'apropospriate-light t))  
      (use-package spacemacs-theme
+       :disabled
        :defer t
        :init (load-theme 'spacemacs-light t))
+     (use-package color-theme-sanityinc-tomorrow
+       :ensure t
+       :config
+       (progn
+         (load-theme 'sanityinc-tomorrow-day t)))
+     ;;smart-line-mode
+     (use-package smart-mode-line
+       :disabled
+       :ensure t
+       :init
+       (progn
+         (setq sml/no-confirm-load-theme t)
+         (sml/setup)))
+     (use-package spaceline
+       :ensure t
+       :demand t
+       :init
+       (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+       :config
+       (require 'spaceline-config)
+       (spaceline-spacemacs-theme)
+       (spaceline-helm-mode))
+   #+END_SRC
+
+** Restart Emacs
+  The heading says it all. 
+  
+   #+BEGIN_SRC emacs-lisp
+   (use-package restart-emacs
+     :ensure t
+     :bind* (("C-x M-c" . restart-emacs)))
    #+END_SRC
 
 * R (ESS)
@@ -331,7 +371,7 @@ This rendering is performed by a special library named, for whatever reason, pop
   #+END_SRC
 
 * Window-numbering
-  Numbered window shortcuts for Emacs.
+  Numbered window shortcuts for Emacs. Other options maybe ace-window, but I prefer this one, which is a little bit consistent with the way of clover or other software switching tabs.
 
   #+BEGIN_SRC emacs-lisp
     (use-package window-numbering
@@ -364,20 +404,59 @@ This rendering is performed by a special library named, for whatever reason, pop
   #+BEGIN_SRC emacs-lisp
     (use-package projectile
       :ensure t
-      :bind ("C-x p" . projectile-switch-project)
       :config
       (projectile-global-mode)
-      (setq projectile-enable-caching t))
-  #+END_SRC
-
-* Ivy
-  Ivy is a completion framework that helps you find things (files, emacs commands, etc). We set it up here with a super minimal configuration because the reference 
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package ivy
+      (setq projectile-enable-caching t)
+      (setq projectile-completion-system 'ivy))
+    
+    (use-package counsel-projectile
       :ensure t
       :config
-      (ivy-mode 1))
+      (counsel-projectile-on))
+    
+    (use-package ag
+      :ensure t
+      :commands (ag ag-files ag-regexp ag-project ag-dired)
+      :config 
+      (setq ag-highlight-search t)
+      (setq ag-reuse-buffers 't))
+  #+END_SRC
+
+* Swiper / Ivy / Counsel
+  Swiper gives us a really efficient incremental search with regular expressions and Ivy / Counsel replace a lot of ido or helms completion functionality.
+
+  #+BEGIN_SRC emacs-lisp  
+   (use-package counsel
+     :ensure t
+     :bind
+     (("M-y" . counsel-yank-pop)
+     :map ivy-minibuffer-map
+     ("M-y" . ivy-next-line)))
+
+
+   (use-package ivy
+     :ensure t
+     :diminish (ivy-mode)
+     :bind (("C-x b" . ivy-switch-buffer))
+     :config
+     (ivy-mode 1)
+     (setq ivy-use-virtual-buffers t)
+     (setq ivy-display-style 'fancy))
+
+
+   (use-package swiper
+     :ensure t
+     :bind (("C-s" . swiper)
+            ("C-r" . swiper)
+            ("C-c C-r" . ivy-resume)
+            ("M-x" . counsel-M-x))
+     :config
+     (progn
+       (ivy-mode 1)
+       (setq ivy-use-virtual-buffers t)
+       (setq ivy-display-style 'fancy)
+       (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+       ))
   #+END_SRC
 
 * Avy
@@ -414,18 +493,27 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
 
 * YASnippet 
   YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates. Bundled language templates include: C, C++, C#, Perl, Python, Ruby, SQL, LaTeX, HTML, CSS and more. The snippet syntax is inspired from TextMate's syntax, you can even import most TextMate templates to YASnippet. 
-  #+BEGIN_SRC emacs-lisp
-    (use-package yasnippet
-	  :ensure t
-      :commands (yas-minor-mode) ; autoload `yasnippet' when `yas-minor-mode' is called
-                                            ; using any means: via a hook or by user
-                                            ; Feel free to add more commands to this
-                                            ; list to suit your needs.
-      :init ; stuff to do before requiring the package
-      (progn
-        (add-hook 'prog-mode-hook #'yas-minor-mode))
-      :config ; stuff to do after requiring the package
-      (progn
-        (yas-reload-all)))
-  #+END_SRC
 
+   #+BEGIN_SRC emacs-lisp
+     (use-package yasnippet
+       :ensure t
+       :commands (yas-minor-mode) ; autoload `yasnippet' when `yas-minor-mode' is called
+                                             ; using any means: via a hook or by user
+                                             ; Feel free to add more commands to this
+                                             ; list to suit your needs.
+       :init ; stuff to do before requiring the package
+       (progn
+         (add-hook 'prog-mode-hook #'yas-minor-mode))
+       :config ; stuff to do after requiring the package
+       (progn
+         (yas-reload-all)))
+   #+END_SRC
+
+* Org-mode
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package org-bullets
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+   #+END_SRC
