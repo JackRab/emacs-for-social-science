@@ -73,18 +73,32 @@
     (global-visual-line-mode)
   #+END_SRC
 
-  The default font size(10pt) is too small for me personally, so I want to rescale it a little bit.
 
-  #+BEGIN_SRC emacs-lisp
-    (set-face-attribute 'default nil :height 140)
-  #+END_SRC
-  
+    
   #+BEGIN_SRC emacs-lisp
     ;; deletes all the whitespace when you hit backspace or delete
    (use-package hungry-delete
      :ensure t
      :config
      (global-hungry-delete-mode))
+  #+END_SRC
+
+** Font
+
+   The default font size(10pt) is too small for me personally, so I want to rescale it a little bit. Also, set Chinese fonts to solve coding problem.
+
+  #+BEGIN_SRC emacs-lisp
+    (set-face-attribute 'default nil :height 140)
+    
+    ;; [[http://zhuoqiang.me/torture-emacs.html][Font setting comes here.]]
+    ;; Setting English Font
+    (set-face-attribute 'default nil :font "Consolas 14")
+    
+    ;; Chinese Font
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font)
+                        charset (font-spec :family "Microsoft YaHei"
+                                           :size 14)))   
   #+END_SRC
 
 ** Fix for Mac
@@ -202,6 +216,17 @@
      :bind* (("C-x M-c" . restart-emacs)))
    #+END_SRC
 
+** Highlight
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package volatile-highlights
+      :ensure t
+      :demand t
+      :diminish volatile-highlights-mode
+      :config
+      (volatile-highlights-mode t))
+  #+END_SRC
+
 * R (ESS)
   ESS (short for Emacs Speaks Statistics) is the package that lets Emacs know about R and how it works. Let's load it up. No need to make sure that it is installed like we did with =use-package= in the previous section - =use-package= lets us just say "ensure" and will install it if it doesn't exist:  
 
@@ -210,6 +235,21 @@
       :ensure ess)
   #+END_SRC
 
+** Stata
+   Stata is not so fully supported as R in ESS, especially on Windows. See [[https://www.statalist.org/forums/forum/general-stata-discussion/general/1309287-how-to-use-stata-in-emacs-with-ess][here]] for a discussion. But we still get an option to use ado-mode, which is not perfect to let you run Stata in terminal on Windows, but is still great to work in Emacs. [[http://louabill.org/Stata/ado-mode_install.html][Configuration comes here.]] Also, ado-mode may be override by ESS, so we need to start if after ESS loaded, see [[https://www.statalist.org/forums/forum/general-stata-discussion/general/22851-ado-mode-emacs-and-ess][here]] for discussion.
+
+  #+BEGIN_SRC emacs-lisp
+     ;;(use-package ess-site
+     ;;  :load-path "ado-mode-1.14.2.0/lisp/"
+     ;;  (require 'ado-mode)
+     ;;  (setq auto-mode-alist
+     ;;  (append (list '("\\.ado\\'" . ado-mode)
+     ;;  '("\\.do\\'" . ado-mode))
+     ;;  auto-mode-alist)))
+     (add-to-list 'load-path "~/.emacs.d/ado-mode-1.14.2.0/lisp/")
+     (require 'ado-mode)
+  #+END_SRC
+   
 * Elpy
    Elpy is an Emacs package to bring powerful Python editing to Emacs. It combines and configures a number of other packages, both written in Emacs Lisp as well as Python.
 
@@ -517,3 +557,40 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
        :config
        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
    #+END_SRC
+* IBUFFER
+
+  #+BEGIN_SRC emacs-lisp
+    (global-set-key (kbd "C-x C-b") 'ibuffer)
+    (setq ibuffer-saved-filter-groups
+  	(quote (("default"
+  		 ("dired" (mode . dired-mode))
+  		 ("org" (name . "^.*org$"))
+  	       
+  		 ("web" (or (mode . web-mode) (mode . js2-mode)))
+  		 ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+  		 ("mu4e" (or
+  
+                   (mode . mu4e-compose-mode)
+                   (name . "\*mu4e\*")
+                   ))
+  		 ("programming" (or
+  				 (mode . python-mode)
+  				 (mode . c++-mode)))
+  		 ("emacs" (or
+  			   (name . "^\\*scratch\\*$")
+  			   (name . "^\\*Messages\\*$")))
+  		 ))))
+    (add-hook 'ibuffer-mode-hook
+  	    (lambda ()
+  	      (ibuffer-auto-mode 1)
+  	      (ibuffer-switch-to-saved-filter-groups "default")))
+  
+    ;; don't show these
+  					  ;(add-to-list 'ibuffer-never-show-predicates "zowie")
+    ;; Don't show filter groups if there are no buffers in that group
+    (setq ibuffer-show-empty-filter-groups nil)
+  
+    ;; Don't ask for confirmation to delete marked buffers
+    (setq ibuffer-expert t)
+  
+  #+END_SRC
