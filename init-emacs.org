@@ -225,6 +225,15 @@
       :diminish volatile-highlights-mode
       :config
       (volatile-highlights-mode t))
+    
+    (global-hl-line-mode t) ;; this turns on highlight line mode. It makes it easy to see the line the cursor's on.
+    
+    ;; flashes the cursor's line when you scroll
+    (use-package beacon
+      :ensure t
+      :config
+      (beacon-mode 1)
+      )
   #+END_SRC
 
 * R (ESS)
@@ -426,8 +435,18 @@ This rendering is performed by a special library named, for whatever reason, pop
   #+BEGIN_SRC emacs-lisp
     (use-package expand-region
       :ensure t
-      :bind ("C-=" . er/expand-region))
+      :config 
+      (global-set-key (kbd "C-=") 'er/expand-region))
   #+END_SRC
+
+* Indent
+  aggressive-indent-mode is a minor mode that keeps your code always indented. It reindents after every change, making it more reliable than electric-indent-mode.
+    #+BEGIN_SRC emacs-lisp
+      (use-package aggressive-indent
+        :ensure t
+        :config
+        (global-aggressive-indent-mode))
+    #+END_SRC
 
 * Which-key
    Emacs package that displays available keybindings in popup.
