@@ -180,15 +180,26 @@
      ;;  :ensure t
      ;;  :config
      ;;  (load-theme 'apropospriate-light t))  
+
+     ;; https://github.com/abo-abo/eclipse-theme.git
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/eclipse-theme")
+     (load-theme 'eclipse t)
+     (use-package spacemacs-theme
+       :ensure t
+       :defer t
+       :init (load-theme 'eclipse t))
+
      (use-package spacemacs-theme
        :disabled
        :defer t
        :init (load-theme 'spacemacs-light t))
+
      (use-package color-theme-sanityinc-tomorrow
        :ensure t
        :config
        (progn
          (load-theme 'sanityinc-tomorrow-day t)))
+
      ;;smart-line-mode
      (use-package smart-mode-line
        :disabled
@@ -197,6 +208,7 @@
        (progn
          (setq sml/no-confirm-load-theme t)
          (sml/setup)))
+
      (use-package spaceline
        :ensure t
        :defer 5
@@ -431,7 +443,8 @@ This rendering is performed by a special library named, for whatever reason, pop
       )
   #+END_SRC
 
-* Window-numbering
+* Window move
+** Window-numbering
   Numbered window shortcuts for Emacs. Other options maybe ace-window, but I prefer this one, which is a little bit consistent with the way of clover or other software switching tabs.
 
   #+BEGIN_SRC emacs-lisp
@@ -442,6 +455,8 @@ This rendering is performed by a special library named, for whatever reason, pop
         (window-numbering-mode t)))
   #+END_SRC
   
+** Winner-mode
+
   #+BEGIN_SRC emacs-lisp
     (use-package winner
     :init
