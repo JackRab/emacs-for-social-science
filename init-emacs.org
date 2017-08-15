@@ -51,6 +51,7 @@
   In particular, we load =better-defaults=, a package that selects some better default settings for Emacs. it you're interested what it does, you can look at it [[https://github.com/technomancy/better-defaults][on github]]:
 
   #+BEGIN_SRC emacs-lisp
+    (setq use-package-verbose t) ;; see which package is loaded slowly
     (delete-selection-mode) ; if I select something then type, delete it and replace it
     (use-package better-defaults
       :ensure t)
@@ -198,13 +199,12 @@
          (sml/setup)))
      (use-package spaceline
        :ensure t
-       :demand t
+       :defer 5
        :init
-       (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
        :config
+       (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
        (require 'spaceline-config)
-       (spaceline-spacemacs-theme)
-       (spaceline-helm-mode))
+       (spaceline-spacemacs-theme))
    #+END_SRC
 
 ** Restart Emacs
@@ -221,7 +221,7 @@
   #+BEGIN_SRC emacs-lisp
     (use-package volatile-highlights
       :ensure t
-      :demand t
+      :defer t
       :diminish volatile-highlights-mode
       :config
       (volatile-highlights-mode t))
@@ -241,7 +241,8 @@
 
   #+BEGIN_SRC emacs-lisp
     (use-package ess-site
-      :ensure ess)
+      :ensure ess
+      :defer t)
   #+END_SRC
 
 ** Stata
@@ -265,6 +266,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package elpy
        :ensure t
+       :defer t
        :config
        (elpy-enable))
    #+END_SRC
@@ -275,6 +277,7 @@
   #+BEGIN_SRC emacs-lisp
     (use-package tex-site
       :ensure auctex
+      :defer t
       :mode ("\\.tex\\'" . latex-mode)
       :config
       (setq TeX-auto-save t)
@@ -364,7 +367,7 @@ This rendering is performed by a special library named, for whatever reason, pop
       :config
       (setq reftex-cite-prompt-optional-args t)); Prompt for empty optional arguments in cite 
   #+END_SRC
-* References & bibliographies 
+* References & bibliographies
   This package configuration lets you type =C-c C-r=  to bring up a list of your references. You can then search through it til you find the one you want. Hitting =RET= inserts a citation. There are a few other things you can do besides inserting citations - have a look by highlighting a bib entry and pressing =M-o=. 
 
 =ivy-bibtex= can also keep track of pdfs of articles and notes that you take pertaining to these articles. Since this is a "minimal" configuration, I don't set that up here. If you're interested, look at =bibtex-completion-library-path= and =bibtex-completion-notes-path=
@@ -372,6 +375,7 @@ This rendering is performed by a special library named, for whatever reason, pop
   #+BEGIN_SRC emacs-lisp
     (use-package ivy-bibtex
       :ensure t
+      :defer t
       :config 
       (setq bibtex-completion-bibliography my/bib-file-location)
       (bind-key* "C-c C-r" #'ivy-bibtex)
@@ -429,6 +433,12 @@ This rendering is performed by a special library named, for whatever reason, pop
       (progn
         (window-numbering-mode t)))
   #+END_SRC
+  
+  #+BEGIN_SRC emacs-lisp
+    (use-package winner
+    :init
+    (winner-mode)) 
+  #+END_SRC
 
 * Expand-region 
   Expand region increases the selected region by semantic units. Just keep pressing the key until it selects what you want.
@@ -470,6 +480,7 @@ This rendering is performed by a special library named, for whatever reason, pop
     
     (use-package counsel-projectile
       :ensure t
+      :defer t
       :config
       (counsel-projectile-on))
     
@@ -542,7 +553,6 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   #+BEGIN_SRC emacs-lisp
    (use-package smex
      :ensure t
-     :defer t
      :bind (("M-x" . smex)
             ("M-X" . smex-major-mode-commands))
      :config
@@ -556,11 +566,12 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
    #+BEGIN_SRC emacs-lisp
      (use-package yasnippet
        :ensure t
+       :defer t
        :commands (yas-minor-mode) ; autoload `yasnippet' when `yas-minor-mode' is called
                                              ; using any means: via a hook or by user
                                              ; Feel free to add more commands to this
                                              ; list to suit your needs.
-       :init ; stuff to do before requiring the package
+       :config ; stuff to do before requiring the package
        (progn
          (add-hook 'prog-mode-hook #'yas-minor-mode))
        :config ; stuff to do after requiring the package

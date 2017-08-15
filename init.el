@@ -37,7 +37,7 @@
     ("6952b5d43bbd4f1c6727ff61bc9bf5677d385e101433b78ada9c3f0e3787af06" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default)))
  '(package-selected-packages
    (quote
-    (dired-quick-sort dired+ hungry-delete powerline alect-themes eziam-theme moe-theme base16-theme color-theme evil-tutor spacemacs-theme pdf-tools ivy-bibtex ivy magit polymode markdown-mode auctex ess smartparens company-quickhelp company better-defaults use-package))))
+    (dired-quick-sort hungry-delete powerline alect-themes eziam-theme moe-theme color-theme evil-tutor spacemacs-theme pdf-tools ivy-bibtex ivy magit polymode markdown-mode auctex ess smartparens company-quickhelp company better-defaults use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
