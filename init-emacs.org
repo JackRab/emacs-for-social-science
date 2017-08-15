@@ -182,9 +182,7 @@
      ;;  (load-theme 'apropospriate-light t))  
 
      ;; https://github.com/abo-abo/eclipse-theme.git
-     (add-to-list 'custom-theme-load-path "~/.emacs.d/eclipse-theme")
-     (load-theme 'eclipse t)
-     (use-package spacemacs-theme
+     (use-package eclipse-theme
        :ensure t
        :defer t
        :init (load-theme 'eclipse t))
@@ -434,6 +432,7 @@ This rendering is performed by a special library named, for whatever reason, pop
       :init
       (evil-mode 1) ;;enable evil mode by default
       ;;(setq evil-default-state 'emacs) ;; enter emacs mode after initialize
+      (evil-set-initial-state 'dired-mode 'emacs) ;; set to emacs mode when in dired mode
       (define-key evil-emacs-state-map (kbd "C-o") 'evil-execute-in-normal-state) ;;temporary enter evil mode
       :config
       ;; show which mode is in
