@@ -236,6 +236,14 @@
       )
   #+END_SRC
 
+** Undo-tree
+   #+BEGIN_SRC emacs-lisp
+     (use-package undo-tree
+      :ensure t
+      :init
+      (global-undo-tree-mode))
+   #+END_SRC 
+
 * R (ESS)
   ESS (short for Emacs Speaks Statistics) is the package that lets Emacs know about R and how it works. Let's load it up. No need to make sure that it is installed like we did with =use-package= in the previous section - =use-package= lets us just say "ensure" and will install it if it doesn't exist:  
 
@@ -517,7 +525,7 @@ This rendering is performed by a special library named, for whatever reason, pop
    (use-package swiper
      :ensure t
      :bind (("C-s" . swiper)
-            ("C-r" . swiper)
+            ("M-r" . counsel-rg) ;; http://oremacs.com/ recommend use rg as an main search tool
             ("C-c C-r" . ivy-resume)
             ("M-x" . counsel-M-x))
      :config
