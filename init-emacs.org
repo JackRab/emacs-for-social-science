@@ -498,6 +498,12 @@ This rendering is performed by a special library named, for whatever reason, pop
       :config 
       (setq ag-highlight-search t)
       (setq ag-reuse-buffers 't))
+    
+    (use-package ripgrep
+      :ensure t)
+
+    (use-package projectile-ripgrep
+      :ensure t)
   #+END_SRC
 
 * Swiper / Ivy / Counsel
