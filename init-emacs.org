@@ -267,13 +267,6 @@
    Stata is not so fully supported as R in ESS, especially on Windows. See [[https://www.statalist.org/forums/forum/general-stata-discussion/general/1309287-how-to-use-stata-in-emacs-with-ess][here]] for a discussion. But we still get an option to use ado-mode, which is not perfect to let you run Stata in terminal on Windows, but is still great to work in Emacs. [[http://louabill.org/Stata/ado-mode_install.html][Configuration comes here.]] Also, ado-mode may be override by ESS, so we need to start if after ESS loaded, see [[https://www.statalist.org/forums/forum/general-stata-discussion/general/22851-ado-mode-emacs-and-ess][here]] for discussion.
 
   #+BEGIN_SRC emacs-lisp
-     ;;(use-package ess-site
-     ;;  :load-path "ado-mode-1.14.2.0/lisp/"
-     ;;  (require 'ado-mode)
-     ;;  (setq auto-mode-alist
-     ;;  (append (list '("\\.ado\\'" . ado-mode)
-     ;;  '("\\.do\\'" . ado-mode))
-     ;;  auto-mode-alist)))
      (add-to-list 'load-path "~/.emacs.d/ado-mode-1.14.2.0/lisp/")
      (require 'ado-mode)
   #+END_SRC
@@ -462,6 +455,27 @@ This rendering is performed by a special library named, for whatever reason, pop
     (winner-mode)) 
   #+END_SRC
 
+** Windmove
+
+   #+BEGIN_SRC emacs-lisp
+     (windmove-default-keybindings) ;; use shift + left/right to move between windows 
+   #+END_SRC
+   
+** Ace-window
+
+   #+BEGIN_SRC emacs-lisp
+(use-package ace-window
+    :ensure t
+    :init
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    (setq aw-background nil)
+    :bind ("M-p" . ace-window)
+    :config
+    (custom-set-faces '(aw-leading-char-face
+    ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+   )
+   #+END_SRC
+
 * Expand-region 
   Expand region increases the selected region by semantic units. Just keep pressing the key until it selects what you want.
   #+BEGIN_SRC emacs-lisp
@@ -490,7 +504,8 @@ This rendering is performed by a special library named, for whatever reason, pop
        :config
        (which-key-mode t))
    #+END_SRC
-* Projectile 
+* Project
+** Projectile 
   Projectile is a project interaction library for Emacs. Its goal is to provide a nice set of features operating on a project level without introducing external dependencies(when feasible). For instance - finding project files has a portable implementation written in pure Emacs Lisp without the use of GNU find (but for performance sake an indexing mechanism backed by external commands exists as well).
   #+BEGIN_SRC emacs-lisp
     (use-package projectile
@@ -506,6 +521,24 @@ This rendering is performed by a special library named, for whatever reason, pop
       :config
       (counsel-projectile-on))
     
+    (use-package ag
+      :ensure t
+      :commands (ag ag-files ag-regexp ag-project ag-dired)
+      :config 
+      (setq ag-highlight-search t)
+      (setq ag-reuse-buffers 't))
+    
+    (use-package ripgrep
+      :ensure t)
+
+    (use-package projectile-ripgrep
+      :ensure t)
+  #+END_SRC
+  
+** Search tools
+   Ag and ripgrep are too command line search tools that are alternatives to grep but with are relatively more efficient.
+
+  #+BEGIN_SRC emacs-lisp
     (use-package ag
       :ensure t
       :commands (ag ag-files ag-regexp ag-project ag-dired)
@@ -562,7 +595,7 @@ This rendering is performed by a special library named, for whatever reason, pop
   #+BEGIN_SRC emacs-lisp
     (use-package avy
     :ensure t
-    :bind ("M-s" . avy-goto-char))
+    :bind ("M-s" . avy-goto-char-2))
   #+END_SRC
 
 * Flycheck 
