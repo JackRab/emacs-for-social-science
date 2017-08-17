@@ -259,8 +259,7 @@
 
   #+BEGIN_SRC emacs-lisp
     (use-package ess-site
-      :ensure ess
-      :defer t)
+      :ensure ess)
   #+END_SRC
 
 ** Stata
@@ -464,16 +463,16 @@ This rendering is performed by a special library named, for whatever reason, pop
 ** Ace-window
 
    #+BEGIN_SRC emacs-lisp
-(use-package ace-window
-    :ensure t
-    :init
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-    (setq aw-background nil)
-    :bind ("M-p" . ace-window)
-    :config
-    (custom-set-faces '(aw-leading-char-face
-    ((t (:inherit ace-jump-face-foreground :height 3.0)))))
-   )
+     (use-package ace-window
+         :ensure t
+         :init
+         (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+         (setq aw-background nil)
+         :bind ("M-p" . ace-window)
+         :config
+         (custom-set-faces '(aw-leading-char-face
+         ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+        )
    #+END_SRC
 
 * Expand-region 
@@ -613,6 +612,7 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenient interface to your recently and most frequently used commands. And to all the other commands, too.
   #+BEGIN_SRC emacs-lisp
    (use-package smex
+     :disabled ;; not needed since we get counsel-M-x
      :ensure t
      :bind (("M-x" . smex)
             ("M-X" . smex-major-mode-commands))
