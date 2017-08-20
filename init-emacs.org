@@ -78,10 +78,10 @@
     
   #+BEGIN_SRC emacs-lisp
     ;; deletes all the whitespace when you hit backspace or delete
-   (use-package hungry-delete
-     :ensure t
-     :config
-     (global-hungry-delete-mode))
+    (use-package hungry-delete
+      :ensure t
+      :config
+      (global-hungry-delete-mode))
   #+END_SRC
 
 ** Font
@@ -100,6 +100,13 @@
       (set-fontset-font (frame-parameter nil 'font)
                         charset (font-spec :family "Microsoft YaHei"
                                            :size 14)))   
+    ;; font scaling
+    (defhydra hydra-zoom (global-map "<f2>")
+       "zoom"
+       ("i" text-scale-increase "in")
+       ("d" text-scale-decrease "out")
+       ("0" (text-scale-adjust 0) "reset")
+       ("q" nil "quit" :color blue))
   #+END_SRC
 
 ** Fix for Mac
@@ -253,6 +260,34 @@
       :init
       (global-undo-tree-mode))
    #+END_SRC 
+
+** Rectangle editing
+   #+BEGIN_SRC emacs-lisp
+     (defhydra hydra-rectangle (:body-pre (rectangle-mark-mode 1)
+                           :color red 
+                           :post (deactivate-mark))
+       "
+       ^_k_^        _d_elete        _s_tring      _e_xchange  
+     _h_   _l_      _o_k            _y_ank        _p_aste 
+       ^_j_^        _n_ew-copy      _r_eset       _u_ndo
+     "
+       ("h" backward-char nil)
+       ("l" forward-char nil)
+       ("k" previous-line nil)
+       ("j" next-line nil)
+       ("e" exchange-point-and-mark nil)
+       ("n" copy-rectangle-as-kill nil)
+       ("d" delete-rectangle nil)
+       ("r" (if (region-active-p)
+                (deactivate-mark)
+              (rectangle-mark-mode 1)) nil)
+       ("y" yank-rectangle nil)
+       ("u" undo nil)
+       ("s" string-rectangle nil)
+       ("p" kill-rectangle nil)
+       ("o" nil nil))
+     (global-set-key (kbd "C-x SPC") 'hydra-rectangle/body) 
+   #+END_SRC
 
 * Hydra
   This is a package for GNU Emacs that can be used to tie related commands into a family of short bindings with a common prefix - a Hydra.
@@ -1298,6 +1333,17 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
        :ensure t
        :config
        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+     (defhydra hydra-org (:color red :columns 3) 
+       "Org Mode Movements"
+       ("n" outline-next-visible-heading "next heading")
+       ("p" outline-previous-visible-heading "prev heading")
+       ("N" org-forward-heading-same-level "next heading at same level")
+       ("P" org-backward-heading-same-level "prev heading at same level")
+       ("u" outline-up-heading "up heading")
+       ("g" org-goto "goto" :exit t))
+     (add-hook 'org-mode-hook
+          (lambda () (local-set-key (kbd "<f8>") #'hydra-org/body)))
    #+END_SRC
 * IBUFFER
 
