@@ -289,6 +289,13 @@
      (global-set-key (kbd "C-x SPC") 'hydra-rectangle/body) 
    #+END_SRC
 
+** Centering-window
+   Global minor mode that centers the text of the window. If another window is visible the text goes back to normal if its width is less than cwm-centered-window-width.
+   #+BEGIN_SRC emacs-lisp
+     (use-package centered-window-mode
+      :ensure t)
+   #+END_SRC 
+
 * Hydra
   This is a package for GNU Emacs that can be used to tie related commands into a family of short bindings with a common prefix - a Hydra.
 
