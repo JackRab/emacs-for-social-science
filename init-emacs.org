@@ -1389,3 +1389,25 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
     (setq ibuffer-expert t)
   
   #+END_SRC
+* Google
+  Google-this is a set of emacs functions and bindings to google under point.
+  #+BEGIN_SRC emacs-lisp
+    ;; google-this
+    (use-package google-this
+      :ensure
+      :config
+      (google-this-mode 1)) 
+  #+END_SRC
+  
+ Gscholar-bibtex allows you to retrieve BibTeX entries from Google Scholar, ACM Digital Library, IEEE Xplore and DBLP.
+  #+BEGIN_SRC emacs-lisp
+    (use-package gscholar-bibtex
+      :ensure
+      :commands gscholar-bibtex
+      :init
+      (setq gscholar-bibtex-database-file "~/.emacs.d/research.bib")
+      :config
+      (dolist (source '("ACM Digital Library" "IEEE Xplore" "DBLP"))
+        (gscholar-bibtex-source-on-off :off source))
+      (setq gscholar-bibtex-default-source "Google Scholar"))  
+  #+END_SRC
