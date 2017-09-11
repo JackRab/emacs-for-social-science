@@ -190,6 +190,7 @@
 
      ;; https://github.com/abo-abo/eclipse-theme.git
      (use-package eclipse-theme
+       :disabled
        :ensure t
        :defer t
        :init (load-theme 'eclipse t))
@@ -197,13 +198,21 @@
      (use-package spacemacs-theme
        :disabled
        :defer t
+       :ensure t
        :init (load-theme 'spacemacs-light t))
 
      (use-package color-theme-sanityinc-tomorrow
+       :disabled
        :ensure t
        :config
        (progn
          (load-theme 'sanityinc-tomorrow-day t)))
+
+     (use-package leuven-theme
+       :ensure t
+       :config
+       (progn
+         (load-theme 'leuven t)))
 
      ;;smart-line-mode
      (use-package smart-mode-line
@@ -293,7 +302,8 @@
    Global minor mode that centers the text of the window. If another window is visible the text goes back to normal if its width is less than cwm-centered-window-width.
    #+BEGIN_SRC emacs-lisp
      (use-package centered-window-mode
-      :ensure t)
+      :ensure t
+      :config (centered-window-mode t))
    #+END_SRC 
 
 * Hydra
@@ -305,7 +315,7 @@
       :ensure t
       :defer 0.1
       :init
-      (bind-key "\\" 'hydra-master/body)
+      (bind-key "<f6>" 'hydra-master/body)
       :config
       (setq lv-use-separator t)
       (set-face-attribute 'hydra-face-blue nil :foreground "deep sky blue" :weight 'bold)
