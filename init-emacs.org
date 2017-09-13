@@ -6,7 +6,7 @@
 
 
   #+BEGIN_SRC emacs-lisp
-    (defvar my/bib-file-location "h:/project/uncertainty/uncertainty.bib"
+    (defvar my/bib-file-location "~/.emacs.d/research.bib"
       "Where I keep my bib file.")
   #+END_SRC
 * Emacs package management
