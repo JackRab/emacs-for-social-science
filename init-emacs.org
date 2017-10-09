@@ -145,13 +145,11 @@
    
    #+BEGIN_SRC emacs-lisp
    (use-package company-auctex
-     :disabled
      :ensure t
      :defer t
      :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
    
    (use-package company-math
-     :disabled
      :ensure t
      :defer t
      :after company
@@ -161,7 +159,6 @@
              (add-to-list 'company-backends 'company-math-symbols-latex)))
    
    (use-package company-statistics
-     :disabled
      :ensure t
      :after company
      :config (company-statistics-mode 1))
