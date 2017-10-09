@@ -965,10 +965,8 @@
   #+BEGIN_SRC emacs-lisp
     (use-package tex-site
       :ensure auctex
-      :defer t
       :mode ("\\.tex\\'" . latex-mode)
       :config
-      (setq TeX-auto-save t)
       (setq TeX-parse-self t)
       ;; Here we make auctex aware of latexmk and xelatexmk. We can use
       ;; these instead of calling pdflatex, bibtex, pdflatex, pdflatex (or
@@ -978,51 +976,19 @@
         '(add-to-list 'TeX-command-list '("latexmk" "latexmk -synctex=1 -shell-escape -pdf %s" TeX-run-TeX nil t :help "Process file with latexmk")))
       (eval-after-load "tex"
         '(add-to-list 'TeX-command-list '("xelatexmk" "latexmk -synctex=1 -shell-escape -xelatex %s" TeX-run-TeX nil t :help "Process file with xelatexmk")))
-      (add-hook 'LaTeX-mode-hook
-                (lambda ()
-                  (company-mode)
-                  (smartparens-mode)
-                  (turn-on-reftex)
-                  (setq reftex-plug-into-AUCTeX t)
-                  (reftex-isearch-minor-mode)
-                  (setq TeX-command-default "latexmk")
-                  (setq TeX-PDF-mode t)
-                  (setq TeX-source-correlate-method 'synctex)
-                  (setq TeX-source-correlate-start-server t)))
-      ;; Update PDF buffers after successful LaTeX runs
-      ;;(add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-      ;; see issue [[https://github.com/politza/pdf-tools/issues/128][here]]
-      (require 'subr-x)
-      (defun th/pdf-view-revert-buffer-maybe (file)
-      (when-let ((buf (find-buffer-visiting file)))
-      (with-current-buffer buf
-      (when (derived-mode-p 'pdf-view-mode)
-      (pdf-view-revert-buffer nil t)))))
-      
-      (add-hook 'TeX-after-compilation-finished-functions 
-      #'th/pdf-view-revert-buffer-maybe)
-
-      ;; to use pdfview with auctex
-      (add-hook 'LaTeX-mode-hook 'pdf-tools-install)
-      
-      ;; to use pdfview with auctex
-      (setq TeX-view-program-selection '((output-pdf "pdf-tools"))
-             TeX-source-correlate-start-server t)
-      (setq TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
-       
-       ;; use sumatra to view pdf, comment this since we get pdf-tools
+      (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+       ;; use sumatra to view pdf
        ;; http://stackoverflow.com/questions/14448606/sync-emacs-auctex-with-sumatra-pdf
-       ;;(setq TeX-PDF-mode t)
-       ;;(setq TeX-source-correlate-mode t)
-       ;;(setq TeX-source-correlate-method 'synctex)
-       ;;(setq TeX-view-program-list
-       ;;   '(("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance"
-       ;;                      (mode-io-correlate " -forward-search %b %n ") " %o"))))
-       ;;
-       ;;(eval-after-load 'tex
-       ;;  '(progn
-       ;;     (assq-delete-all 'output-pdf TeX-view-program-selection)
-       ;;     (add-to-list 'TeX-view-program-selection '(output-pdf "Sumatra PDF")))))
+       (setq TeX-PDF-mode t)
+       (setq TeX-source-correlate-mode t)
+       (setq TeX-source-correlate-method 'synctex)
+       (setq TeX-view-program-list
+          '(("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance"
+                             (mode-io-correlate " -forward-search %b %n ") " %o"))))
+       (eval-after-load 'tex
+         '(progn
+            (assq-delete-all 'output-pdf TeX-view-program-selection)
+            (add-to-list 'TeX-view-program-selection '(output-pdf "Sumatra PDF")))))
   #+END_SRC
   
 ** Sumatra Pdf
@@ -1036,6 +1002,7 @@ This rendering is performed by a special library named, for whatever reason, pop
   #+BEGIN_SRC emacs-lisp
     ;; This configure file comes from [[http://nasseralkmim.github.io/notes/2016/08/21/my-latex-environment/][here]]
     (use-package pdf-tools
+      :disabled
       :ensure t
       :mode ("\\.pdf\\'" . pdf-tools-install)
       :defer t
