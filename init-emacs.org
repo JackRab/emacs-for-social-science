@@ -966,6 +966,7 @@
       :mode ("\\.tex\\'" . latex-mode)
       :config
       (setq TeX-parse-self t)
+      (setq TeX-save-query nil)
       ;; Here we make auctex aware of latexmk and xelatexmk. We can use
       ;; these instead of calling pdflatex, bibtex, pdflatex, pdflatex (or
       ;; similar). I'll set latexmk as the default as there's really no
