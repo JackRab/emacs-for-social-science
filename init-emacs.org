@@ -149,15 +149,15 @@
      :defer t
      :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
    
-   (use-package company-math
-     :disabled ;; cause company to respond very slow
-     :ensure t
-     :defer t
-     :after company
-     ;; Add backend for math characters
-     :init (progn
-             (add-to-list 'company-backends 'company-math-symbols-unicode)
-             (add-to-list 'company-backends 'company-math-symbols-latex)))
+   ;;(use-package company-math
+   ;;  :disabled ;; cause company to respond very slow
+   ;;  :ensure t
+   ;;  :defer t
+   ;;  :after company
+   ;;  ;; Add backend for math characters
+   ;;  :init (progn
+   ;;          (add-to-list 'company-backends 'company-math-symbols-unicode)
+   ;;          (add-to-list 'company-backends 'company-math-symbols-latex)))
    
    (use-package company-statistics
      :ensure t
@@ -956,7 +956,7 @@
        :config
        (elpy-enable))
    #+END_SRC
-
+   
 * Latex (AuCTeX)
   If you use latex to do any writing, you'll be happy to know that emacs is the highest-rated latex editor [[http://tex.stackexchange.com/questions/339/latex-editors-ides/][on stackexchange]].
   
@@ -1207,13 +1207,15 @@ This rendering is performed by a special library named, for whatever reason, pop
            ("M-g z" . dumb-jump-go-prefer-external-other-window))
     :config ((setq dumb-jump-selector 'ivy) 
              (setq dumb-jump-prefer-searcher 'rg))
-    :ensure)
+    :ensure t
+    :defer t)
   #+END_SRC
 
 * Expand-region 
   Expand region increases the selected region by semantic units. Just keep pressing the key until it selects what you want.
   #+BEGIN_SRC emacs-lisp
     (use-package expand-region
+      :disabled
       :ensure t
       :config 
       (global-set-key (kbd "C-=") 'er/expand-region))
@@ -1352,7 +1354,7 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenient interface to your recently and most frequently used commands. And to all the other commands, too.
   #+BEGIN_SRC emacs-lisp
    (use-package smex
-     :disabled ;; not needed since we get counsel-M-x
+     :disabled ;; not needed since we get counsel-M-x, not disable it if we want recent commands list
      :ensure t
      :bind (("M-x" . smex)
             ("M-X" . smex-major-mode-commands))
@@ -1441,6 +1443,7 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   #+BEGIN_SRC emacs-lisp
     ;; google-this
     (use-package google-this
+      :disabled
       :ensure
       :config
       (google-this-mode 1)) 

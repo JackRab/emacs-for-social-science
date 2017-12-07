@@ -61,7 +61,7 @@
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (projectile pdf-tools color-theme-sanityinc-tomorrow solarized-theme org dired-quick-sort hungry-delete powerline alect-themes eziam-theme moe-theme color-theme evil-tutor spacemacs-theme ivy-bibtex ivy magit polymode markdown-mode auctex ess smartparens company-quickhelp company better-defaults use-package)))
+    (smex projectile pdf-tools color-theme-sanityinc-tomorrow solarized-theme org dired-quick-sort hungry-delete powerline alect-themes eziam-theme moe-theme color-theme evil-tutor spacemacs-theme ivy-bibtex ivy magit polymode markdown-mode auctex ess smartparens company-quickhelp company better-defaults use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
