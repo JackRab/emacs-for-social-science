@@ -135,7 +135,7 @@
        (add-hook 'after-init-hook #'global-company-mode)
        :config
        (setq company-tooltip-limit 20)                      ; bigger popup window
-       (setq company-idle-delay .3)                         ; decrease delay before autocompletion popup shows
+       (setq company-idle-delay .2)                         ; decrease delay before autocompletion popup shows
        (setq company-echo-delay 0)                          ; remove annoying blinking
        (setq company-begin-commands '(self-insert-command)) ; start autocompletion only after typing
        (setq company-dabbrev-downcase nil)                  ; set dabbrev not to downcase things
@@ -180,7 +180,12 @@
        :init
        (require 'smartparens-config)
        (smartparens-global-mode)
-       (show-smartparens-global-mode))
+       (show-smartparens-global-mode)
+
+       ;; Stata additions for smartparens
+       (sp-local-pair 'ado-mode "`" "'") ;; Defining locals
+       (sp-local-pair 'ado-mode "`\"" "\"'") ;; Escapes in Stata
+      )
    #+END_SRC
 
 ** Backup files
@@ -344,9 +349,9 @@
 ** Centering-window
    Global minor mode that centers the text of the window. If another window is visible the text goes back to normal if its width is less than cwm-centered-window-width.
    #+BEGIN_SRC emacs-lisp
-     (use-package centered-window-mode
-      :ensure t
-      :config (centered-window-mode t))
+     ;;(use-package centered-window-mode
+     ;; :ensure t
+     ;; :config (centered-window-mode t))
    #+END_SRC 
 
 * Hydra
