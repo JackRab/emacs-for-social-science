@@ -497,6 +497,17 @@ This rendering is performed by a special library named, for whatever reason, pop
       ("\\.Rmd" . poly-markdown+r-mode))
   #+END_SRC
 
+  Markdown mode is a major mode for editing Markdown-formatted text.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package markdown-mode
+      :ensure t
+      :mode (("README\\.md\\'" . gfm-mode)
+             ("\\.md\\'" . markdown-mode)
+             ("\\.markdown\\'" . markdown-mode))
+      :init (setq markdown-command "multimarkdown"))
+  #+END_SRC
+
 * Git (magit)
   Magit is an Emacs package that makes dealing with git awesome.
 
