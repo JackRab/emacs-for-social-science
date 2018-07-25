@@ -136,6 +136,16 @@
          :config
          (exec-path-from-shell-initialize)))
    #+END_SRC
+   
+   And I prefer command key for meta
+   #+BEGIN_SRC emacs-lisp
+     (setq mac-option-key-is-meta nil
+           mac-command-key-is-meta t
+           mac-command-modifier 'meta
+           mac-option-modifier 'none)
+   #+END_SRC
+   
+
 ** Auto completion 
    We'll use =company= (short for "complete anything") to do auto-completion. This will, for example, enable the same kind of pop-up messages that mimic [[https://support.rstudio.com/hc/en-us/articles/205273297-Code-Completion][Rstudio's autocomplete features]]. As of this writing (August 2016), Emacs' autocompletion isn't quite as good as Rstudios. In particular, it won't pick up on variables from =data.frames= that you've passed to e.g. =dplyr= functions through piping calls. (e.g. ~mtcars %>% filter()~) won't give you =mpg= as an option inside the filter statement. Having said that, =company= does a really good job:
 
