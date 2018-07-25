@@ -45,6 +45,17 @@
     (require 'bind-key)
 
   #+END_SRC
+* Hydra
+  This is a package for GNU Emacs that can be used to tie related commands into a family of short bindings with a common prefix - a Hydra.
+
+  #+BEGIN_SRC emacs-lisp
+  ;; this configuration comes from [[https://github.com/joedicastro/dotfiles/blob/master/emacs/.emacs.d/readme.org][here]].
+    (use-package hydra
+      :ensure t
+      :defer 0.1
+      :init )
+  #+END_SRC
+
 * Dealing with default emacs
   Emacs was created probably before you were born, which makes it super ancient in computer terms. In this section, we override some of the (now) silly default behavior so that emacs acts more like we expect a program to act in the 21st century. We'll load up some better default settings, activate auto-completion, and enable a smart way of dealing with pairs (e.g. parentheses, quotes, etc)
 
@@ -359,17 +370,6 @@
      ;; :config (centered-window-mode t))
    #+END_SRC 
 
-* Hydra
-  This is a package for GNU Emacs that can be used to tie related commands into a family of short bindings with a common prefix - a Hydra.
-
-  #+BEGIN_SRC emacs-lisp
-  ;; this configuration comes from [[https://github.com/joedicastro/dotfiles/blob/master/emacs/.emacs.d/readme.org][here]].
-    (use-package hydra
-      :ensure t
-      :defer 0.1
-      :init )
-  #+END_SRC
-
 * R (ESS)
   ESS (short for Emacs Speaks Statistics) is the package that lets Emacs know about R and how it works. Let's load it up. No need to make sure that it is installed like we did with =use-package= in the previous section - =use-package= lets us just say "ensure" and will install it if it doesn't exist:  
 
@@ -382,7 +382,7 @@
    Stata is not so fully supported as R in ESS, especially on Windows. See [[https://www.statalist.org/forums/forum/general-stata-discussion/general/1309287-how-to-use-stata-in-emacs-with-ess][here]] for a discussion. But we still get an option to use ado-mode, which is not perfect to let you run Stata in terminal on Windows, but is still great to work in Emacs. [[http://louabill.org/Stata/ado-mode_install.html][Configuration comes here.]] Also, ado-mode may be override by ESS, so we need to start if after ESS loaded, see [[https://www.statalist.org/forums/forum/general-stata-discussion/general/22851-ado-mode-emacs-and-ess][here]] for discussion.
 
   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "C:/Apps-SU/ado-mode-1.15.1.2/lisp")
+     (add-to-list 'load-path "~/.emacs.d/ado-mode-1.15.1.2/lisp")
      (require 'ado-mode)
   #+END_SRC
    
@@ -428,18 +428,20 @@
               ;;(setq TeX-source-correlate-method 'synctex)))
               ;;(setq TeX-source-correlate-start-server t)))
        (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
-       ;; use sumatra to view pdf
-       ;; http://stackoverflow.com/questions/14448606/sync-emacs-auctex-with-sumatra-pdf
+       ;; use Skim as default pdf viewer
+       ;; http://www.stefanom.org/setting-up-a-nice-auctex-environment-on-mac-os-x/
+       ;; Skim's displayline is used for forward search (from .tex to .pdf)
+       ;; option -b highlights the current line; option -g opens Skim in the background  
        (setq TeX-PDF-mode t)
-       (setq TeX-source-correlate-mode t)
        (setq TeX-source-correlate-method 'synctex)
+       (setq TeX-source-correlate-mode t)
+       ;;(setq TeX-source-correlate-start-server t)
        (setq TeX-view-program-list
-          '(("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance"
-                             (mode-io-correlate " -forward-search %b %n ") " %o"))))
+            '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
        (eval-after-load 'tex
          '(progn
             (assq-delete-all 'output-pdf TeX-view-program-selection)
-            (add-to-list 'TeX-view-program-selection '(output-pdf "Sumatra PDF")))))
+            (add-to-list 'TeX-view-program-selection '(output-pdf "PDF Viewer")))))
   #+END_SRC
   
 ** Sumatra Pdf
