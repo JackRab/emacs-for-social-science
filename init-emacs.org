@@ -76,7 +76,7 @@
 
   #+BEGIN_SRC emacs-lisp
     ;; comment this part since I use Evil
-    ;; (global-set-key (kbd "C-z") #'undo)
+    (global-set-key (kbd "C-z") #'undo)
   #+END_SRC
 
   We also want words to wrap around nicely. The default behavior wraps in the middle of a word, which is awful:
@@ -171,11 +171,11 @@
    #+END_SRC
    
    #+BEGIN_SRC emacs-lisp
-   ;;(use-package company-auctex
-   ;;  :disabled ;; cause company to respond very slow
-   ;;  :ensure t
-   ;;  :defer t
-   ;;  :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
+   (use-package company-auctex
+     ;;:disabled ;; cause company to respond very slow
+     :ensure t
+     :defer t
+     :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
 
    (add-to-list 'load-path "~/.emacs.d/bratex")
    (require 'bratex)
@@ -237,6 +237,7 @@
        (setq ispell-program-name "aspell" ; use aspell instead of ispell
         ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
        (add-hook 'text-mode-hook #'turn-on-flyspell)
+       (setq flyspell-issue-message-flag nil) ;; fix performance problem in https://www.emacswiki.org/emacs/FlySpell
        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
        (add-hook 'ess-mode-hook #'flyspell-prog-mode))
    #+END_SRC
@@ -587,67 +588,67 @@ This rendering is performed by a special library named, for whatever reason, pop
          ((t (:inherit ace-jump-face-foreground :height 3.0)))))
         )
 
-  (global-set-key (kbd "<f9>")
-   (defhydra hydra-window () 
-      "
-   Movement^^        ^Split^         ^Switch^		^Resize^
-   ----------------------------------------------------------------
-   _h_ ←       	_v_ertical    	_b_uffer		_q_ X←
-   _j_ ↓        	_x_ horizontal	_f_ind files	_w_ X↓
-   _k_ ↑        	_z_ undo      	_a_ce 1		_e_ X↑
-   _l_ →        	_Z_ reset      	_s_wap		_r_ X→
-   _F_ollow		_D_lt Other   	_S_ave		max_i_mize
-   _SPC_ cancel	_o_nly this   	_d_elete	
-   "
-      ("h" windmove-left )
-      ("j" windmove-down )
-      ("k" windmove-up )
-      ("l" windmove-right )
-      ("q" hydra-move-splitter-left)
-      ("w" hydra-move-splitter-down)
-      ("e" hydra-move-splitter-up)
-      ("r" hydra-move-splitter-right)
-      ("b" helm-mini)
-      ("f" helm-find-files)
-      ("F" follow-mode)
-      ("a" (lambda ()
-             (interactive)
-             (ace-window 1)
-             (add-hook 'ace-window-end-once-hook
-                       'hydra-window/body))
-          )
-      ("v" (lambda ()
-             (interactive)
-             (split-window-right)
-             (windmove-right))
-          )
-      ("x" (lambda ()
-             (interactive)
-             (split-window-below)
-             (windmove-down))
-          )
-      ("s" (lambda ()
-             (interactive)
-             (ace-window 4)
-             (add-hook 'ace-window-end-once-hook
-                       'hydra-window/body)))
-      ("S" save-buffer)
-      ("d" delete-window)
-      ("D" (lambda ()
-             (interactive)
-             (ace-window 16)
-             (add-hook 'ace-window-end-once-hook
-                       'hydra-window/body))
-          )
-      ("o" delete-other-windows)
-      ("i" ace-maximize-window)
-      ("z" (progn
-             (winner-undo)
-             (setq this-command 'winner-undo))
-      )
-      ("Z" winner-redo)
-      ("SPC" nil)
-      ))
+  ;;(global-set-key (kbd "<f9>")
+  ;; (defhydra hydra-window () 
+  ;;    "
+  ;; Movement^^        ^Split^         ^Switch^		^Resize^
+  ;; ----------------------------------------------------------------
+  ;; _h_ ←       	_v_ertical    	_b_uffer		_q_ X←
+  ;; _j_ ↓        	_x_ horizontal	_f_ind files	_w_ X↓
+  ;; _k_ ↑        	_z_ undo      	_a_ce 1		_e_ X↑
+  ;; _l_ →        	_Z_ reset      	_s_wap		_r_ X→
+  ;; _F_ollow		_D_lt Other   	_S_ave		max_i_mize
+  ;; _SPC_ cancel	_o_nly this   	_d_elete	
+  ;; "
+  ;;    ("h" windmove-left )
+  ;;    ("j" windmove-down )
+  ;;    ("k" windmove-up )
+  ;;    ("l" windmove-right )
+  ;;    ("q" hydra-move-splitter-left)
+  ;;    ("w" hydra-move-splitter-down)
+  ;;    ("e" hydra-move-splitter-up)
+  ;;    ("r" hydra-move-splitter-right)
+  ;;    ("b" helm-mini)
+  ;;    ("f" helm-find-files)
+  ;;    ("F" follow-mode)
+  ;;    ("a" (lambda ()
+  ;;           (interactive)
+  ;;           (ace-window 1)
+  ;;           (add-hook 'ace-window-end-once-hook
+  ;;                     'hydra-window/body))
+  ;;        )
+  ;;    ("v" (lambda ()
+  ;;           (interactive)
+  ;;           (split-window-right)
+  ;;           (windmove-right))
+  ;;        )
+  ;;    ("x" (lambda ()
+  ;;           (interactive)
+  ;;           (split-window-below)
+  ;;           (windmove-down))
+  ;;        )
+  ;;    ("s" (lambda ()
+  ;;           (interactive)
+  ;;           (ace-window 4)
+  ;;           (add-hook 'ace-window-end-once-hook
+  ;;                     'hydra-window/body)))
+  ;;    ("S" save-buffer)
+  ;;    ("d" delete-window)
+  ;;    ("D" (lambda ()
+  ;;           (interactive)
+  ;;           (ace-window 16)
+  ;;           (add-hook 'ace-window-end-once-hook
+  ;;                     'hydra-window/body))
+  ;;        )
+  ;;    ("o" delete-other-windows)
+  ;;    ("i" ace-maximize-window)
+  ;;    ("z" (progn
+  ;;           (winner-undo)
+  ;;           (setq this-command 'winner-undo))
+  ;;    )
+  ;;    ("Z" winner-redo)
+  ;;    ("SPC" nil)
+  ;;    ))
 
    #+END_SRC
 
@@ -776,7 +777,7 @@ This rendering is performed by a special library named, for whatever reason, pop
             ("C-c g" . counsel-git)
             ("C-c j" . counsel-git-grep)
             ("C-c C-r" . ivy-resume)
-            ("M-x" . counsel-M-x)
+            ("M-x" . counsel-M-x) 
            )
      :config
      (progn
@@ -784,7 +785,8 @@ This rendering is performed by a special library named, for whatever reason, pop
        (setq ivy-use-virtual-buffers t)
        (setq ivy-display-style 'fancy)
        (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-       ))
+       )
+   )
   #+END_SRC
 
 * Avy
@@ -810,13 +812,15 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenient interface to your recently and most frequently used commands. And to all the other commands, too.
   #+BEGIN_SRC emacs-lisp
    (use-package smex
-     :disabled ;; not needed since we get counsel-M-x, not disable it if we want recent commands list
+     ;;:disabled ;; not needed since we get counsel-M-x, not disable it if we want recent commands list
+     ;; enable to use smex histroy, https://www.reddit.com/r/emacs/comments/5sxbny/is_there_anything_like_an_ivycounsel_mx_command/
      :ensure t
-     :bind (("M-x" . smex)
-            ("M-X" . smex-major-mode-commands))
+     ;;:bind (("M-x" . smex)
+     ;;       ("M-X" . smex-major-mode-commands))
      :config
      (progn
-      (smex-initialize))) 
+      (smex-initialize))
+   ) 
   #+END_SRC
 
 * YASnippet 
