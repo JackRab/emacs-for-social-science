@@ -171,25 +171,25 @@
    #+END_SRC
    
    #+BEGIN_SRC emacs-lisp
-   ;;(use-package company-auctex
-   ;;  :disabled ;; cause company to respond very slow
-   ;;  :ensure t
-   ;;  :defer t
-   ;;  :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
+   (use-package company-auctex
+     ;;:disabled ;; cause company to respond very slow
+     :ensure t
+     :defer t
+     :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
 
    (add-to-list 'load-path "~/.emacs.d/bratex")
    (require 'bratex)
    (add-hook 'latex-mode-hook #'bratex-config)
    
-   ;;(use-package company-math
-   ;;  :disabled ;; cause company to respond very slow
-   ;;  :ensure t
-   ;;  :defer t
-   ;;  :after company
-   ;;  ;; Add backend for math characters
-   ;;  :init (progn
-   ;;          (add-to-list 'company-backends 'company-math-symbols-unicode)
-   ;;          (add-to-list 'company-backends 'company-math-symbols-latex)))
+   (use-package company-math
+     ;;:disabled ;; cause company to respond very slow
+     :ensure t
+     :defer t
+     :after company
+     ;; Add backend for math characters
+     :init (progn
+             (add-to-list 'company-backends 'company-math-symbols-unicode)
+             (add-to-list 'company-backends 'company-math-symbols-latex)))
    
    (use-package company-statistics
      :ensure t
