@@ -106,17 +106,17 @@
    The default font size(10pt) is too small for me personally, so I want to rescale it a little bit. Also, set Chinese fonts to solve coding problem.
 
   #+BEGIN_SRC emacs-lisp
-    (set-face-attribute 'default nil :height 140)
+    (set-face-attribute 'default nil :height 180)
     
     ;; [[http://zhuoqiang.me/torture-emacs.html][Font setting comes here.]]
     ;; Setting English Font
-    (set-face-attribute 'default nil :font "Consolas 14")
+    (set-face-attribute 'default nil :font "Consolas 18")
     
     ;; Chinese Font
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font)
                         charset (font-spec :family "Microsoft YaHei"
-                                           :size 14)))   
+                                           :size 18)))   
     ;; font scaling
     (defhydra hydra-zoom (global-map "<f2>")
        "zoom"
@@ -817,15 +817,17 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenient interface to your recently and most frequently used commands. And to all the other commands, too.
   #+BEGIN_SRC emacs-lisp
    (use-package smex
-     :disabled ;; not needed since we get counsel-M-x, not disable it if we want recent commands list
+     ;;:disabled ;; not needed since we get counsel-M-x, not disable it if we want recent commands list
+     ;; enable to use smex histroy, https://www.reddit.com/r/emacs/comments/5sxbny/is_there_anything_like_an_ivycounsel_mx_command/
      :ensure t
-     :bind (("M-x" . smex)
-            ("M-X" . smex-major-mode-commands))
+     ;;:bind (("M-x" . smex)
+     ;;       ("M-X" . smex-major-mode-commands))
      :config
      (progn
-      (smex-initialize))) 
+      (smex-initialize))
+   ) 
   #+END_SRC
-
+ 
 * YASnippet 
   YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates. Bundled language templates include: C, C++, C#, Perl, Python, Ruby, SQL, LaTeX, HTML, CSS and more. The snippet syntax is inspired from TextMate's syntax, you can even import most TextMate templates to YASnippet. 
 
