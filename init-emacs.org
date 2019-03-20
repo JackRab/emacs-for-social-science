@@ -150,11 +150,11 @@
    #+END_SRC
    
    #+BEGIN_SRC emacs-lisp
-   ;;(use-package company-auctex
-   ;;  :disabled ;; cause company to respond very slow
-   ;;  :ensure t
-   ;;  :defer t
-   ;;  :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
+   (use-package company-auctex
+     ;;:disabled ;; cause company to respond very slow
+     :ensure t
+     :defer t
+     :init (add-hook 'LaTeX-mode-hook #'company-auctex-init))
 
    (add-to-list 'load-path "~/.emacs.d/bratex")
    (require 'bratex)
@@ -216,6 +216,7 @@
        (setq ispell-program-name "aspell" ; use aspell instead of ispell
         ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
        (add-hook 'text-mode-hook #'turn-on-flyspell)
+       (setq flyspell-issue-message-flag nil) ;; fix performance problem in https://www.emacswiki.org/emacs/FlySpell
        (add-hook 'prog-mode-hook #'flyspell-prog-mode)
        (add-hook 'ess-mode-hook #'flyspell-prog-mode))
    #+END_SRC
@@ -805,10 +806,10 @@ Then press C-M-x with point somewhere in this form to install and enable Flychec
   Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenient interface to your recently and most frequently used commands. And to all the other commands, too.
   #+BEGIN_SRC emacs-lisp
    (use-package smex
-     :disabled ;; not needed since we get counsel-M-x, not disable it if we want recent commands list
+     ;;:disabled ;; not needed since we get counsel-M-x, not disable it if we want recent commands list
      :ensure t
-     :bind (("M-x" . smex)
-            ("M-X" . smex-major-mode-commands))
+     ;;:bind (("M-x" . smex)
+     ;;       ("M-X" . smex-major-mode-commands))
      :config
      (progn
       (smex-initialize))) 
