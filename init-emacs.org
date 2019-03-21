@@ -205,6 +205,7 @@
    We can use =flyspell= for on-the-fly spell checking, similar to what we get with MS Word or whatever. =C-;= runs =flyspell-auto-correct-previous-word= which automatically corrects the last word still on screen. If it doesn't guess right the first time, press it again. 
    #+BEGIN_SRC emacs-lisp
      (use-package flyspell
+       :disabled ;; slow in windows
        :ensure t
        :init
        ;;While it always spells a flyspell enabling error message, 
@@ -383,7 +384,7 @@
    Stata is not so fully supported as R in ESS, especially on Windows. See [[https://www.statalist.org/forums/forum/general-stata-discussion/general/1309287-how-to-use-stata-in-emacs-with-ess][here]] for a discussion. But we still get an option to use ado-mode, which is not perfect to let you run Stata in terminal on Windows, but is still great to work in Emacs. [[http://louabill.org/Stata/ado-mode_install.html][Configuration comes here.]] Also, ado-mode may be override by ESS, so we need to start if after ESS loaded, see [[https://www.statalist.org/forums/forum/general-stata-discussion/general/22851-ado-mode-emacs-and-ess][here]] for discussion.
 
   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "C:/Apps-SU/ado-mode-1.15.1.2/lisp")
+     (add-to-list 'load-path "C:/Apps-SU/ado-mode-1.15.1.4/lisp")
      (require 'ado-mode)
   #+END_SRC
    
@@ -393,9 +394,21 @@
    #+BEGIN_SRC emacs-lisp
      (use-package elpy
        :ensure t
-       :defer t
        :config
-       (elpy-enable))
+       (elpy-enable)
+       (add-to-list 'exec-path "C:/conda/anaconda3/")
+       ;;(setenv "PATH" (concat "C:\\conda\\anaconda3\\Scripts;C:\\conda\\anaconda3;" (getenv "PATH"))) 
+       ;;(setq python-shell-interpreter "C:/conda/anaconda3/python.exe")
+       (setq elpy-rpc-python-command "python")
+       )
+   #+END_SRC
+   
+   #+BEGIN_SRC emacs-lisp
+     (use-package py-autopep8 
+       :ensure t
+       :config
+      (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+       )
    #+END_SRC
    
 * Latex (AuCTeX)
@@ -519,6 +532,7 @@ This rendering is performed by a special library named, for whatever reason, pop
 
   #+BEGIN_SRC emacs-lisp
     (use-package magit
+      :disabled ;; slow in windows
       :ensure t
       :bind ("C-x g" . magit-status))
   #+END_SRC
@@ -711,18 +725,6 @@ This rendering is performed by a special library named, for whatever reason, pop
       :config
       (counsel-projectile-on))
     
-    (use-package ag
-      :ensure t
-      :commands (ag ag-files ag-regexp ag-project ag-dired)
-      :config 
-      (setq ag-highlight-search t)
-      (setq ag-reuse-buffers 't))
-    
-    (use-package ripgrep
-      :ensure t)
-
-    (use-package projectile-ripgrep
-      :ensure t)
   #+END_SRC
   
 ** Search tools
@@ -796,6 +798,7 @@ This rendering is performed by a special library named, for whatever reason, pop
 
   #+BEGIN_SRC emacs-lisp
     (use-package flycheck
+      :disabled ;; slow in windows
       :ensure t
       :init (global-flycheck-mode))
   #+END_SRC
