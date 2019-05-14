@@ -393,8 +393,8 @@
    Stata is not so fully supported as R in ESS, especially on Windows. See [[https://www.statalist.org/forums/forum/general-stata-discussion/general/1309287-how-to-use-stata-in-emacs-with-ess][here]] for a discussion. But we still get an option to use ado-mode, which is not perfect to let you run Stata in terminal on Windows, but is still great to work in Emacs. [[http://louabill.org/Stata/ado-mode_install.html][Configuration comes here.]] Also, ado-mode may be override by ESS, so we need to start if after ESS loaded, see [[https://www.statalist.org/forums/forum/general-stata-discussion/general/22851-ado-mode-emacs-and-ess][here]] for discussion.
 
   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/ado-mode-1.15.1.2/lisp")
-     (require 'ado-mode)
+     ;(add-to-list 'load-path "~/.emacs.d/ado-mode-1.15.1.2/lisp")
+     ;(require 'ado-mode)
   #+END_SRC
    
 * Elpy
